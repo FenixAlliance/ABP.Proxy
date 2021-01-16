@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.1.2</Version>
+    <Company>Fenix Alliance Inc.</Company>
+    <Authors>Fenix Alliance Group</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <TargetFramework>net5.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
+    <PackageProjectUrl>https://absuite.net</PackageProjectUrl>
+    <PackageLicenseUrl>https://absuite.net/eula</PackageLicenseUrl>
+    <Copyright>Â© 2009 - 2021 Fenix Alliance Inc. All rights reserved.</Copyright>
+    <PackageIconUrl>https://fenixalliance.com.co/images/FenixAlliance/AppIcon/apple-icon-120x120.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/FenixAlliance/ABM.Data</RepositoryUrl>
+    <PackageTags>Alliance Business Suite, Fenix Alliance, ABS</PackageTags>
+    <Description>Application Component for the Alliance Business Suite.</Description>
+    <PackageReleaseNotes>Standarize at v1.1.0</PackageReleaseNotes>
+    <LangVersion>8.0</LangVersion>
+    <IsTestProject>false</IsTestProject>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.7" />
+  </ItemGroup>
+</Project>
