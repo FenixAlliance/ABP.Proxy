@@ -13,7 +13,9 @@ namespace FenixAlliance.ABP.Proxy
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     if(!uri.StartsWith("ws", System.StringComparison.OrdinalIgnoreCase))
+                    {
                         throw new InvalidOperationException("A WebSocket request must forward to a WebSocket (ws[s]) endpoint.");
+                    }
 
                     await context.ExecuteWsProxyOperationAsync(uri, options).ConfigureAwait(false);
                     return;
@@ -21,7 +23,9 @@ namespace FenixAlliance.ABP.Proxy
 
                 // Assume HTTP if not WebSocket.
                 if(!uri.StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
+                {
                     throw new InvalidOperationException("An HTTP request must forward to an HTTP (http[s]) endpoint.");
+                }
 
                 await context.ExecuteHttpProxyOperationAsync(uri, options).ConfigureAwait(false);
             }

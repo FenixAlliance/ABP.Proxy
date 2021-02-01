@@ -22,8 +22,12 @@ namespace FenixAlliance.ABP.Proxy
                 }
                 
                 foreach (var headerEntry in context.Request.Headers)
+                {
                     if (!Helpers.WebSocketNotForwardedHeaders.ToList().Contains(headerEntry.Key, StringComparer.OrdinalIgnoreCase))
+                    {
                         socketToEndpoint.Options.SetRequestHeader(headerEntry.Key, headerEntry.Value);
+                    }
+                }
 
                 // TODO: Add a proxy options for keep alive and set it here.
                 //client.Options.KeepAliveInterval = proxyService.Options.WebSocketKeepAliveInterval.Value;
@@ -62,8 +66,10 @@ namespace FenixAlliance.ABP.Proxy
                 }
 
                 if(destination.State != WebSocketState.Open && destination.State != WebSocketState.CloseReceived)
+                {
                     return;
-                    
+                }
+
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await destination.CloseOutputAsync(source.CloseStatus.Value, source.CloseStatusDescription, cancellationToken);

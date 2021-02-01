@@ -42,9 +42,13 @@ namespace FenixAlliance.ABP.Proxy
         public static IServiceCollection AddProxies(this IServiceCollection services, Action<HttpClient> configureProxyClient = null)
         {
             if(configureProxyClient != null)
+            {
                 services.AddHttpClient(Helpers.HttpProxyClientName, configureProxyClient);
+            }
             else
+            {
                 services.AddHttpClient(Helpers.HttpProxyClientName);
+            }
 
             return services;
         }
@@ -64,17 +68,24 @@ namespace FenixAlliance.ABP.Proxy
                 var parameters = method.GetParameters();
 
                 if(method.ReturnType != typeof(Task<string>) && method.ReturnType != typeof(string))
+                {
                     throw new InvalidOperationException($"Proxied generator method ({name}) must return a `Task<string>` or `string`.");
+                }
 
-                if(!method.IsStatic)
+                if (!method.IsStatic)
+                {
                     throw new InvalidOperationException($"Proxied generator method ({name}) must be static.");
+                }
 
                 if (attribute != null)
+                {
                     app.UseProxy(attribute.Route, args =>
                     {
                         if (args.Count() != parameters.Count())
+                        {
                             throw new InvalidOperationException(
                                 $"Proxied generator method ({name}) parameter mismatch.");
+                        }
 
                         var castedArgs = args.Zip(parameters,
                             (a, p) => new
@@ -97,10 +108,13 @@ namespace FenixAlliance.ABP.Proxy
                         // Make sure to always return a `Task<string>`, but allow methods that just return a `string`.
 
                         if (method.ReturnType == typeof(Task<string>))
+                        {
                             return method.Invoke(null, castedArgs.ToArray()) as Task<string>;
+                        }
 
                         return Task.FromResult(method.Invoke(null, castedArgs.ToArray()) as string);
                     });
+                }
             }
         }
 

@@ -15,18 +15,26 @@ namespace FenixAlliance.ABP.Proxy
         {
             // If `true`, this proxy call has been intercepted.
             if(options?.Intercept != null && await options.Intercept(context))
+            {
                 return;
+            }
 
             var proxiedRequest = context.CreateProxiedHttpRequest(uri, options?.ShouldAddForwardedHeaders ?? true);
 
             if(options?.BeforeSend != null)
+            {
                 await options.BeforeSend(context, proxiedRequest).ConfigureAwait(false);
+            }
+
             var proxiedResponse = await context
                 .SendProxiedHttpRequestAsync(proxiedRequest, options?.HttpClientName ?? Helpers.HttpProxyClientName)
                 .ConfigureAwait(false);
 
             if(options?.AfterReceive != null)
+            {
                 await options.AfterReceive(context, proxiedResponse).ConfigureAwait(false);
+            }
+
             await context.WriteProxiedHttpResponseAsync(proxiedResponse).ConfigureAwait(false);
         }
 
@@ -50,12 +58,18 @@ namespace FenixAlliance.ABP.Proxy
 
             // Copy the request headers.
             foreach (var header in context.Request.Headers)
+            {
                 if (!requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()))
+                {
                     requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                }
+            }
 
             // Add forwarded headers.
-            if(shouldAddForwardedHeaders)
+            if (shouldAddForwardedHeaders)
+            {
                 AddForwardedHeadersToHttpRequest(context, requestMessage);
+            }
 
             // Set destination and method.
             requestMessage.Headers.Host = uri.Authority;
@@ -108,7 +122,10 @@ namespace FenixAlliance.ABP.Proxy
             var isRemoteIpV6 = connection.RemoteIpAddress?.AddressFamily == AddressFamily.InterNetworkV6;
 
             if(remoteIp != null)
+            {
                 requestMessage.Headers.TryAddWithoutValidation("X-Forwarded-For", remoteIp);
+            }
+
             requestMessage.Headers.TryAddWithoutValidation("X-Forwarded-Proto", protocol);
             requestMessage.Headers.TryAddWithoutValidation("X-Forwarded-Host", host);
 
@@ -118,7 +135,9 @@ namespace FenixAlliance.ABP.Proxy
             if(localIp != null)
             {
                 if(isLocalIpV6)
+                {
                     localIp = $"\"[{localIp}]\"";
+                }
 
                 forwardedHeader.Append($"by={localIp};");
             }
@@ -126,7 +145,9 @@ namespace FenixAlliance.ABP.Proxy
             if(remoteIp != null)
             {
                 if(isRemoteIpV6)
+                {
                     remoteIp = $"\"[{remoteIp}]\"";
+                }
 
                 forwardedHeader.Append($"for={remoteIp};");
             }
