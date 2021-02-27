@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace FenixAlliance.ABP.Proxy
 {
@@ -60,11 +60,11 @@ namespace FenixAlliance.ABP.Proxy
         /// The <see cref="HttpResponseMessage"/> can be edited before the response is written to the client.
         /// </value>
         public Func<HttpContext, HttpResponseMessage, Task> AfterReceive { get; set; }
-        
+
         /// <summary>
         /// The default constructor.
         /// </summary>
-        public ProxyOptions() {}
+        public ProxyOptions() { }
 
         private ProxyOptions(
             bool shouldAddForwardedHeaders,
@@ -83,7 +83,7 @@ namespace FenixAlliance.ABP.Proxy
         }
 
         private static ProxyOptions CreateFrom(
-            ProxyOptions old, 
+            ProxyOptions old,
             bool? shouldAddForwardedHeaders = null,
             string httpClientName = null,
             Func<HttpContext, Exception, Task> handleFailure = null,

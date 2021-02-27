@@ -1,10 +1,10 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace FenixAlliance.ABP.Proxy
 {
@@ -20,7 +20,7 @@ namespace FenixAlliance.ABP.Proxy
                 {
                     socketToEndpoint.Options.AddSubProtocol(protocol);
                 }
-                
+
                 foreach (var headerEntry in context.Request.Headers)
                 {
                     if (!Helpers.WebSocketNotForwardedHeaders.ToList().Contains(headerEntry.Key, StringComparer.OrdinalIgnoreCase))
@@ -65,7 +65,7 @@ namespace FenixAlliance.ABP.Proxy
                     return;
                 }
 
-                if(destination.State != WebSocketState.Open && destination.State != WebSocketState.CloseReceived)
+                if (destination.State != WebSocketState.Open && destination.State != WebSocketState.CloseReceived)
                 {
                     return;
                 }

@@ -1,14 +1,14 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FenixAlliance.ABP.Proxy
 {
@@ -41,7 +41,7 @@ namespace FenixAlliance.ABP.Proxy
         /// <returns>The same instance.</returns>
         public static IServiceCollection AddProxies(this IServiceCollection services, Action<HttpClient> configureProxyClient = null)
         {
-            if(configureProxyClient != null)
+            if (configureProxyClient != null)
             {
                 services.AddHttpClient(Helpers.HttpProxyClientName, configureProxyClient);
             }
@@ -61,13 +61,13 @@ namespace FenixAlliance.ABP.Proxy
         {
             var methods = Helpers.GetReferencingAssemblies().SelectMany(a => a.GetTypes()).SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttributes(typeof(ProxyRouteAttribute), false).Length > 0);
 
-            foreach(var method in methods)
+            foreach (var method in methods)
             {
                 var name = $"{method.DeclaringType}.{method.Name}";
                 var attribute = method.GetCustomAttributes(typeof(ProxyRouteAttribute), false).First() as ProxyRouteAttribute;
                 var parameters = method.GetParameters();
 
-                if(method.ReturnType != typeof(Task<string>) && method.ReturnType != typeof(string))
+                if (method.ReturnType != typeof(Task<string>) && method.ReturnType != typeof(string))
                 {
                     throw new InvalidOperationException($"Proxied generator method ({name}) must return a `Task<string>` or `string`.");
                 }
@@ -90,7 +90,8 @@ namespace FenixAlliance.ABP.Proxy
                         var castedArgs = args.Zip(parameters,
                             (a, p) => new
                             {
-                                ArgumentValue = a.Value.ToString(), ArgumentType = p.ParameterType,
+                                ArgumentValue = a.Value.ToString(),
+                                ArgumentType = p.ParameterType,
                                 ParameterName = p.Name
                             }).Select(z =>
                         {
@@ -162,9 +163,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, string proxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaSync(
-                app, 
-                endpoint, 
-                (context, args) => proxiedAddress, 
+                app,
+                endpoint,
+                (context, args) => proxiedAddress,
                 options);
         }
 
@@ -178,9 +179,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<HttpContext, IDictionary<string, object>, Task<string>> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaAsync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(context, args), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(context, args),
                 options);
         }
 
@@ -194,9 +195,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<IDictionary<string, object>, Task<string>> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaAsync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(args), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(args),
                 options);
         }
 
@@ -210,9 +211,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<Task<string>> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaAsync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(),
                 options);
         }
 
@@ -226,9 +227,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<HttpContext, IDictionary<string, object>, string> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaSync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(context, args), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(context, args),
                 options);
         }
 
@@ -242,9 +243,9 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<IDictionary<string, object>, string> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaSync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(args), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(args),
                 options);
         }
 
@@ -258,18 +259,21 @@ namespace FenixAlliance.ABP.Proxy
         public static void UseProxy(this IApplicationBuilder app, string endpoint, Func<string> getProxiedAddress, ProxyOptions options = null)
         {
             UseProxy_GpaSync(
-                app, 
-                endpoint, 
-                (context, args) => getProxiedAddress(), 
+                app,
+                endpoint,
+                (context, args) => getProxiedAddress(),
                 options);
         }
 
         // Provides the "default" implementation for `UseProxy` where the proxied address is computed asynchronously.
         private static void UseProxy_GpaAsync(this IApplicationBuilder app, string endpoint, Func<HttpContext, IDictionary<string, object>, Task<string>> getProxiedAddress, ProxyOptions options = null)
         {
-            app.UseRouter(builder => {
-                builder.MapMiddlewareRoute(endpoint, proxyApp => {
-                    proxyApp.Run(async context => {
+            app.UseRouter(builder =>
+            {
+                builder.MapMiddlewareRoute(endpoint, proxyApp =>
+                {
+                    proxyApp.Run(async context =>
+                    {
                         var uri = await getProxiedAddress(context, context.GetRouteData().Values.ToDictionary(v => v.Key, v => v.Value)).ConfigureAwait(false);
                         await context.ExecuteProxyOperationAsync(uri, options);
                     });
@@ -280,9 +284,12 @@ namespace FenixAlliance.ABP.Proxy
         // Provides the "default" implementation for `UseProxy` where the proxied address is computed synchronously.
         private static void UseProxy_GpaSync(this IApplicationBuilder app, string endpoint, Func<HttpContext, IDictionary<string, object>, string> getProxiedAddress, ProxyOptions options = null)
         {
-            app.UseRouter(builder => {
-                builder.MapMiddlewareRoute(endpoint, proxyApp => {
-                    proxyApp.Run(async context => {
+            app.UseRouter(builder =>
+            {
+                builder.MapMiddlewareRoute(endpoint, proxyApp =>
+                {
+                    proxyApp.Run(async context =>
+                    {
                         var uri = getProxiedAddress(context, context.GetRouteData().Values.ToDictionary(v => v.Key, v => v.Value));
                         await context.ExecuteProxyOperationAsync(uri, options);
                     });

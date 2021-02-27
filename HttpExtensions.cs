@@ -1,11 +1,11 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FenixAlliance.ABP.Proxy
 {
@@ -14,14 +14,14 @@ namespace FenixAlliance.ABP.Proxy
         internal static async Task ExecuteHttpProxyOperationAsync(this HttpContext context, string uri, ProxyOptions options = null)
         {
             // If `true`, this proxy call has been intercepted.
-            if(options?.Intercept != null && await options.Intercept(context))
+            if (options?.Intercept != null && await options.Intercept(context))
             {
                 return;
             }
 
             var proxiedRequest = context.CreateProxiedHttpRequest(uri, options?.ShouldAddForwardedHeaders ?? true);
 
-            if(options?.BeforeSend != null)
+            if (options?.BeforeSend != null)
             {
                 await options.BeforeSend(context, proxiedRequest).ConfigureAwait(false);
             }
@@ -30,7 +30,7 @@ namespace FenixAlliance.ABP.Proxy
                 .SendProxiedHttpRequestAsync(proxiedRequest, options?.HttpClientName ?? Helpers.HttpProxyClientName)
                 .ConfigureAwait(false);
 
-            if(options?.AfterReceive != null)
+            if (options?.AfterReceive != null)
             {
                 await options.AfterReceive(context, proxiedResponse).ConfigureAwait(false);
             }
@@ -121,7 +121,7 @@ namespace FenixAlliance.ABP.Proxy
             var remoteIp = context.Connection.RemoteIpAddress?.ToString();
             var isRemoteIpV6 = connection.RemoteIpAddress?.AddressFamily == AddressFamily.InterNetworkV6;
 
-            if(remoteIp != null)
+            if (remoteIp != null)
             {
                 requestMessage.Headers.TryAddWithoutValidation("X-Forwarded-For", remoteIp);
             }
@@ -132,9 +132,9 @@ namespace FenixAlliance.ABP.Proxy
             // Fix IPv6 IPs for the `Forwarded` header.
             var forwardedHeader = new StringBuilder($"proto={protocol};host={host};");
 
-            if(localIp != null)
+            if (localIp != null)
             {
-                if(isLocalIpV6)
+                if (isLocalIpV6)
                 {
                     localIp = $"\"[{localIp}]\"";
                 }
@@ -142,9 +142,9 @@ namespace FenixAlliance.ABP.Proxy
                 forwardedHeader.Append($"by={localIp};");
             }
 
-            if(remoteIp != null)
+            if (remoteIp != null)
             {
-                if(isRemoteIpV6)
+                if (isRemoteIpV6)
                 {
                     remoteIp = $"\"[{remoteIp}]\"";
                 }

@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace FenixAlliance.ABP.Proxy
 {
@@ -12,7 +12,7 @@ namespace FenixAlliance.ABP.Proxy
             {
                 if (context.WebSockets.IsWebSocketRequest)
                 {
-                    if(!uri.StartsWith("ws", System.StringComparison.OrdinalIgnoreCase))
+                    if (!uri.StartsWith("ws", System.StringComparison.OrdinalIgnoreCase))
                     {
                         throw new InvalidOperationException("A WebSocket request must forward to a WebSocket (ws[s]) endpoint.");
                     }
@@ -22,7 +22,7 @@ namespace FenixAlliance.ABP.Proxy
                 }
 
                 // Assume HTTP if not WebSocket.
-                if(!uri.StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
+                if (!uri.StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
                 {
                     throw new InvalidOperationException("An HTTP request must forward to an HTTP (http[s]) endpoint.");
                 }
@@ -31,7 +31,7 @@ namespace FenixAlliance.ABP.Proxy
             }
             catch (Exception e)
             {
-                if(!context.Response.HasStarted)
+                if (!context.Response.HasStarted)
                 {
                     if (options?.HandleFailure == null)
                     {
